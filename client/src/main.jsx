@@ -3,6 +3,18 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
+// Force tab title to AuditTrace
+document.title = "AuditTrace - AI Financial Auditing Platform";
+
+// Unregister any stale Service Workers cached on localhost:5173 from previous projects
+if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    for (const registration of registrations) {
+      registration.unregister();
+    }
+  });
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <App />

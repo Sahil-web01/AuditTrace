@@ -11,6 +11,31 @@
 
 ---
 
+## 🎯 Hackathon Pitch & Judge Evaluation Guide
+
+### 🎤 60-Second Elevator Pitch
+> *"Over 82% of small and medium enterprises still verify supplier invoices by hand or not at all — resulting in an estimated 5% revenue loss every year to duplicate billings, rogue price hikes, and ghost vendors. **AuditTrace** completely automates this. A business owner simply drops an invoice PDF or photo; our multimodal AI parses line items with zero configuration, while our Python statistical engine cross-references historical ledger patterns to flag price surges and duplicate charges before payment is issued. We save businesses hours of manual checking and thousands of dollars in averted fraud."*
+
+### 🧪 3-Minute Live Demo Script for Judges
+1. **Show Dashboard**: Navigate to `http://localhost:5173`. Point to the 3 High-Impact Cards: **Total Amount Audited**, **Flagged Fraud Prevented**, and **High-Risk Invoices Count**.
+2. **Review Seeded Outliers**: Show the real-time feed with red/amber badges showing exact fraud reasons:
+   - `INV-TL-105`: Extreme price spike ($14,950 vs $1,280 typical average, Z-score: 3.42 > 2.0).
+   - `INV-PLG-404`: Duplicate payment alert (identical $520.00 charged twice).
+   - `INV-AWS-881`: Duplicate invoice number detected in ledger.
+3. **Test In-Line Auditor Actions**: Click **Approve** or **Reject** on any card to show real-time MongoDB status persistence and instant metric recalculation.
+4. **Live Upload Test**: Drag and drop `sample_invoices/2_duplicate_invoice.png` or `3_price_spike_anomaly.png` into the upload zone to demonstrate live Gemini extraction and anomaly flagging.
+5. **Searchable Ledger & CSV Export**: Switch to **All Invoices** table, search by vendor, and click **Export CSV** to demonstrate audit compliance.
+6. **1-Click Demo Logins**: Click **Sign In** in the top right to demonstrate role-based authentication with pre-configured **Lead Auditor** and **Business Owner** profiles.
+
+### 🔑 Pre-Configured Demo Accounts
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Lead Auditor** | `auditor@audittrace.com` | `AuditTrace2026!` |
+| **Business Owner** | `owner@acme.com` | `AuditTrace2026!` |
+*(Both accounts are also accessible via instant 1-click buttons in the Sign-In modal).*
+
+---
+
 ## 🏛 Technical Architecture
 
 To maximize **Technical Implementation** and **Scalability & Future Potential**, AuditTrace employs a decoupled **MERN + Python (FastAPI)** architecture that separates standard web orchestration from specialized machine learning workloads:
@@ -52,86 +77,77 @@ graph TD
 
 ```text
 AuditTrace/
-├── README.md                   # Complete project documentation & startup guide
-├── .gitignore                  # Git ignore rules for node, python, environment files
+├── README.md                   # Complete project documentation & pitch guide
+├── LICENSE                     # MIT Open-Source License
+├── .gitignore                  # Production gitignore rules
+│
+├── sample_invoices/            # Ready-to-use test assets for live demo
+│   ├── 1_valid_invoice.png     # Clean bill -> Approved
+│   ├── 2_duplicate_invoice.png # Duplicate bill -> Flags duplicate invoice alert
+│   └── 3_price_spike_anomaly.png # Outlier bill -> Flags Z-score price spike
 │
 ├── client/                     # Frontend (React.js + Tailwind CSS)
-│   ├── public/                 # Static assets
 │   ├── src/
-│   │   ├── assets/             # Images, icons, svg
-│   │   ├── components/         # Reusable UI components (Navbar, Sidebar, etc.)
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── Sidebar.jsx
-│   │   │   ├── InvoiceUploader.jsx
-│   │   │   ├── FraudAlertCard.jsx
-│   │   │   └── MetricCard.jsx
-│   │   ├── pages/              # App views (Dashboard, Invoices, Analytics, etc.)
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── Invoices.jsx
-│   │   │   ├── AuditLogs.jsx
-│   │   │   ├── Analytics.jsx
-│   │   │   └── Login.jsx
-│   │   ├── context/            # Global React Context (Auth, Notification)
-│   │   │   └── AuthContext.jsx
-│   │   ├── services/           # Axios HTTP client configuration
-│   │   │   └── api.js
-│   │   ├── utils/              # Formatting & helper utilities
-│   │   │   └── formatters.js
-│   │   ├── App.jsx             # Main Application root & routes
-│   │   ├── index.css           # Tailwind CSS directives & global styling
-│   │   └── main.jsx            # React DOM entry point
-│   ├── index.html              # HTML shell
-│   ├── package.json            # Client dependencies & scripts
+│   │   ├── components/         # Reusable UI components
+│   │   │   ├── Navbar.jsx      # Top header with user profile & AI status
+│   │   │   ├── Sidebar.jsx     # Navigation sidebar & 1-Click Demo Reset
+│   │   │   ├── InvoiceUploader.jsx # Drag-and-drop dropzone with loading spinner
+│   │   │   ├── FraudAlertCard.jsx  # Live feed card with Approve/Reject actions
+│   │   │   ├── MetricCard.jsx  # High-impact metric summaries
+│   │   │   ├── Toast.jsx       # Floating notifications for UI shielding
+│   │   │   └── LoginModal.jsx  # JWT modal with 1-Click Demo Logins
+│   │   ├── pages/
+│   │   │   ├── Dashboard.jsx   # Metrics, uploader & active audit feed
+│   │   │   ├── Invoices.jsx    # Searchable & filterable ledger table
+│   │   │   └── Analytics.jsx   # Spend & risk distribution bar charts
+│   │   ├── services/
+│   │   │   └── api.js          # Axios client with automatic JWT injection
+│   │   ├── utils/
+│   │   │   └── formatters.js   # Currency formatting & CSV export helper
+│   │   ├── App.jsx             # Main routing & state container
+│   │   ├── index.css           # Tailwind CSS directives
+│   │   └── main.jsx            # React root & service worker cleanup
+│   ├── index.html              # HTML shell with AuditTrace shield favicon
+│   ├── package.json            # Client dependencies & build scripts
 │   ├── tailwind.config.js      # Tailwind CSS configuration
 │   ├── postcss.config.js       # PostCSS configuration
-│   ├── vite.config.js          # Vite build tool configuration
+│   ├── vite.config.js          # Vite configuration with API proxy
 │   └── .env.example            # Client environment template
 │
-├── server/                     # Backend Orchestrator (Node.js & Express)
+├── server/                     # Backend Orchestrator (Node.js & Express + MongoDB)
 │   ├── src/
 │   │   ├── config/             # DB & Multer upload configurations
-│   │   │   ├── db.js
-│   │   │   └── multer.js
+│   │   │   ├── db.js           # Mongoose Atlas connection
+│   │   │   └── multer.js       # In-memory multipart streaming
 │   │   ├── controllers/        # Request handling logic
-│   │   │   ├── authController.js
-│   │   │   ├── invoiceController.js
-│   │   │   └── vendorController.js
+│   │   │   ├── authController.js # JWT login, register & demo users
+│   │   │   └── invoiceController.js # Ingestion, ledger history & reset
 │   │   ├── models/             # Mongoose schemas
-│   │   │   ├── User.js
-│   │   │   ├── Invoice.js
-│   │   │   ├── Vendor.js
-│   │   │   └── AuditLog.js
+│   │   │   ├── User.js         # User model with bcrypt password hashing
+│   │   │   └── Invoice.js      # Invoice & audit metadata schema
 │   │   ├── routes/             # Express API route endpoints
-│   │   │   ├── authRoutes.js
-│   │   │   ├── invoiceRoutes.js
-│   │   │   └── vendorRoutes.js
-│   │   ├── middlewares/        # Authentication & error handling middlewares
-│   │   │   ├── authMiddleware.js
-│   │   │   └── errorHandler.js
-│   │   ├── services/           # Service layer for Python AI Microservice communication
+│   │   │   ├── authRoutes.js   # /api/auth endpoints
+│   │   │   └── invoiceRoutes.js # /api/invoices endpoints
+│   │   ├── seeds/              # Database benchmark seed data
+│   │   │   ├── sampleData.js   # 18 realistic invoices definition
+│   │   │   └── seedInvoices.js # Standalone seed execution script
+│   │   ├── services/           # AI microservice Axios communication relay
 │   │   │   └── aiService.js
-│   │   ├── app.js              # Express app setup & middleware registrations
-│   │   └── server.js           # Server bootstrap & MongoDB connection
+│   │   ├── app.js              # Express app & route registrations
+│   │   └── server.js           # Server bootstrap & MongoDB connect
 │   ├── package.json            # Server dependencies & scripts
 │   └── .env.example            # Backend environment template
 │
 └── ai-service/                 # AI & Anomaly Detection Microservice (Python & FastAPI)
     ├── app/
-    │   ├── api/                # API router definitions
-    │   │   ├── __init__.py
-    │   │   └── routes.py
-    │   ├── core/               # LLM Extraction & ML Anomaly Detection engines
-    │   │   ├── __init__.py
-    │   │   ├── gemini_extractor.py
-    │   │   └── anomaly_detector.py
-    │   ├── models/             # Pydantic data schemas
-    │   │   ├── __init__.py
-    │   │   └── schemas.py
-    │   ├── utils/              # PDF/image preprocessing and parsing helpers
-    │   │   ├── __init__.py
-    │   │   └── preprocessor.py
-    │   ├── __init__.py
-    │   └── config.py           # Settings and environment configuration
+    │   ├── api/
+    │   │   └── routes.py       # POST /analyze endpoint
+    │   ├── core/
+    │   │   ├── gemini_extractor.py # Multimodal Gemini 1.5 Flash extractor
+    │   │   └── anomaly_detector.py # Duplicate check & Z-score spike logic
+    │   ├── models/
+    │   │   └── schemas.py      # Pydantic data models
+    │   └── config.py           # Environment settings loader
     ├── main.py                 # FastAPI application entry point
     ├── requirements.txt        # Python package dependencies
     └── .env.example            # AI microservice environment template
@@ -180,6 +196,8 @@ Follow the instructions below to configure and run all three tiers locally.
    Add your `GEMINI_API_KEY` into `.env`.
 5. Start the FastAPI microservice:
    ```bash
+   python main.py
+   # Or using uvicorn directly:
    uvicorn main:app --reload --port 8000
    ```
    *FastAPI will run on [http://localhost:8000](http://localhost:8000) (Swagger Docs at [http://localhost:8000/docs](http://localhost:8000/docs)).*
@@ -227,7 +245,7 @@ Follow the instructions below to configure and run all three tiers locally.
    ```bash
    cp .env.example .env
    ```
-   Default `VITE_API_BASE_URL` points to `http://localhost:5000/api`.
+   Default `VITE_API_URL` points to `http://localhost:5000/api` (with fallback to `VITE_API_BASE_URL`).
 4. Start the Vite development server:
    ```bash
    npm run dev
@@ -258,7 +276,31 @@ Follow the instructions below to configure and run all three tiers locally.
 ### Frontend (`client/.env`)
 | Variable | Description | Default |
 | :--- | :--- | :--- |
-| `VITE_API_BASE_URL` | Backend Orchestrator base URL | `http://localhost:5000/api` |
+| `VITE_API_URL` | Backend Orchestrator base URL (fallback: `VITE_API_BASE_URL`) | `http://localhost:5000/api` |
+
+---
+
+## 📡 API Reference
+
+### Backend Orchestrator (`http://localhost:5000`)
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/health` | Healthcheck ping | No |
+| `POST` | `/api/invoices/upload` | Ingests PDF/image invoice via Multer & relays to AI microservice | No (Optional JWT) |
+| `GET` | `/api/invoices` | Retrieves all audited invoices sorted by date descending | No (Optional JWT) |
+| `PATCH` | `/api/invoices/:id/status` | Updates invoice audit status (`Approved`, `Rejected`, `Pending`) | No (Optional JWT) |
+| `DELETE` | `/api/invoices/:id` | Removes an invoice record from the database | No (Optional JWT) |
+| `POST` | `/api/invoices/reset-demo` | Resets MongoDB to the 18 benchmark demo invoices | No |
+| `POST` | `/api/auth/login` | Authenticates user and returns signed JWT token | No |
+| `POST` | `/api/auth/register` | Registers a new auditor or business owner account | No |
+| `GET` | `/api/auth/me` | Fetches active authenticated user profile | Yes (Bearer JWT) |
+
+### AI Microservice (`http://localhost:8000`)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/health` | Microservice health check (`{"status": "ok"}`) |
+| `GET` | `/docs` | Interactive Swagger API documentation |
+| `POST` | `/analyze` | Accepts multipart invoice file + ledger JSON; returns parsed items & fraud scores |
 
 ---
 

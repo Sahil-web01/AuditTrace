@@ -1,4 +1,9 @@
 import json
+import warnings
+
+# Suppress library deprecation notice from printing to terminal
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 import google.generativeai as genai
 from app.config import settings
 from app.models.schemas import InvoiceData, LineItem

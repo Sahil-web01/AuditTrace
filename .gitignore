@@ -50,3 +50,4 @@ temp/
 *.png
 *.jpg
 *.jpeg
+!sample_invoices/*

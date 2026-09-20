@@ -1,5 +1,6 @@
 import Invoice from "../models/Invoice.js";
 import { callAiExtraction } from "../services/aiService.js";
+import { sampleInvoices } from "../seeds/sampleData.js";
 
 export const uploadInvoice = async (req, res) => {
   try {
@@ -54,5 +55,58 @@ export const getInvoices = async (req, res) => {
     return res.json(invoices);
   } catch (err) {
     return res.status(500).json({ error: "Error fetching invoices" });
+  }
+};
+
+export const updateInvoiceStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!["Approved", "Rejected", "Pending"].includes(status)) {
+      return res.status(400).json({ error: "Invalid status value" });
+    }
+
+    const isFlagged = status === "Rejected";
+    const updated = await Invoice.findByIdAndUpdate(
+      id,
+      { status, isFlagged },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    return res.json(updated);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to update invoice status" });
+  }
+};
+
+export const deleteInvoice = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Invoice.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+    return res.json({ message: "Invoice removed successfully", id });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to delete invoice" });
+  }
+};
+
+export const resetDemoInvoices = async (req, res) => {
+  try {
+    await Invoice.deleteMany({});
+    const inserted = await Invoice.insertMany(sampleInvoices);
+    return res.json({
+      message: "Database successfully reset to 18 benchmark invoices",
+      count: inserted.length,
+      invoices: inserted
+    });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to reset demo invoices: " + err.message });
   }
 };

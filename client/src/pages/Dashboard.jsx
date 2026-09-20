@@ -1,46 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { DollarSign, ShieldAlert, FileCheck, RefreshCw, Filter } from "lucide-react";
+import React, { useState } from "react";
+import { DollarSign, ShieldAlert, FileCheck, RefreshCw, Filter, Download } from "lucide-react";
 import MetricCard from "../components/MetricCard";
 import InvoiceUploader from "../components/InvoiceUploader";
 import FraudAlertCard from "../components/FraudAlertCard";
-import Toast from "../components/Toast";
-import { getInvoices } from "../services/api";
+import { formatCurrency, exportInvoicesToCSV } from "../utils/formatters";
 
-export default function Dashboard() {
-  const [invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function Dashboard({
+  invoices = [],
+  loading = false,
+  onRefresh,
+  onUploadSuccess,
+  onUpdateInvoice,
+  onDeleteInvoice,
+  onErrorToast
+}) {
   const [filter, setFilter] = useState("all");
-  const [toast, setToast] = useState({ message: "", type: "error" });
-
-  const showToast = (message, type = "error") => {
-    setToast({ message, type });
-  };
-
-  const closeToast = () => {
-    setToast({ message: "", type: "error" });
-  };
-
-  const loadInvoices = async () => {
-    setLoading(true);
-    try {
-      const data = await getInvoices();
-      setInvoices(data || []);
-    } catch (err) {
-      console.error("Failed to load invoices:", err);
-      showToast("Unable to fetch invoices from server. Check that backend is running.", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadInvoices();
-  }, []);
-
-  const handleUploadSuccess = (newInvoice) => {
-    setInvoices((prev) => [newInvoice, ...prev]);
-    showToast(`Invoice #${newInvoice.invoiceNumber || ""} analyzed successfully`, "success");
-  };
 
   // High-impact Metric Calculations
   const totalAmountAudited = invoices.reduce((acc, curr) => acc + (Number(curr.totalAmount) || 0), 0);
@@ -50,7 +24,6 @@ export default function Dashboard() {
   );
 
   const flaggedFraudPrevented = flaggedInvoices.reduce((acc, curr) => acc + (Number(curr.totalAmount) || 0), 0);
-
   const highRiskCount = flaggedInvoices.length;
 
   const displayedInvoices = invoices.filter((inv) => {
@@ -61,9 +34,6 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Toast Notification for UI shielding */}
-      <Toast message={toast.message} type={toast.type} onClose={closeToast} />
-
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -72,28 +42,39 @@ export default function Dashboard() {
             Real-time financial anomaly detection and automated ledger cross-referencing.
           </p>
         </div>
-        <button
-          onClick={loadInvoices}
-          disabled={loading}
-          className="inline-flex items-center space-x-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium px-3.5 py-2 rounded-lg hover:bg-slate-50 transition-colors shadow-sm self-start sm:self-auto"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-blue-600" : "text-slate-500"}`} />
-          <span>Refresh Feed</span>
-        </button>
+
+        <div className="flex items-center space-x-2 self-start sm:self-auto">
+          <button
+            onClick={() => exportInvoicesToCSV(invoices)}
+            className="inline-flex items-center space-x-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium px-3.5 py-2 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            <Download className="w-4 h-4 text-slate-500" />
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            onClick={onRefresh}
+            disabled={loading}
+            className="inline-flex items-center space-x-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium px-3.5 py-2 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-blue-600" : "text-slate-500"}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
 
       {/* Top 3 High-Impact Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MetricCard
           title="Total Amount Audited"
-          value={`$${totalAmountAudited.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={formatCurrency(totalAmountAudited)}
           subtext={`${invoices.length} invoices processed`}
           icon={DollarSign}
           color="blue"
         />
         <MetricCard
           title="Flagged Fraud Prevented"
-          value={`$${flaggedFraudPrevented.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={formatCurrency(flaggedFraudPrevented)}
           subtext={`${highRiskCount} suspicious invoices caught`}
           icon={ShieldAlert}
           color="red"
@@ -107,10 +88,10 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Ingestion Dropzone with UI Shielding */}
-      <InvoiceUploader onUploadSuccess={handleUploadSuccess} onErrorToast={showToast} />
+      {/* Ingestion Dropzone */}
+      <InvoiceUploader onUploadSuccess={onUploadSuccess} onErrorToast={onErrorToast} />
 
-      {/* Audited Invoice Feed */}
+      {/* Audited Invoices Feed */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-slate-800">
@@ -148,7 +129,7 @@ export default function Dashboard() {
 
         {loading && invoices.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-400 text-sm">
-            Loading audited invoices from database...
+            Loading audited invoices...
           </div>
         ) : displayedInvoices.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
@@ -158,7 +139,12 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-3">
             {displayedInvoices.map((invoice) => (
-              <FraudAlertCard key={invoice._id || invoice.invoiceNumber} invoice={invoice} />
+              <FraudAlertCard
+                key={invoice._id || invoice.invoiceNumber}
+                invoice={invoice}
+                onUpdate={onUpdateInvoice}
+                onDelete={onDeleteInvoice}
+              />
             ))}
           </div>
         )}
