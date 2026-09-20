@@ -1,5 +1,5 @@
 import React from "react";
-import { ShieldCheck, LogIn, LogOut, User } from "lucide-react";
+import { ShieldCheck, LogIn, LogOut, User, Github } from "lucide-react";
 
 export default function Navbar({ currentUser, onOpenLogin, onLogout }) {
   return (
@@ -26,6 +26,17 @@ export default function Navbar({ currentUser, onOpenLogin, onLogout }) {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span className="font-medium text-slate-700">AI Microservice Active</span>
           </div>
+
+          <a
+            href="https://github.com/Sahil-web01/AuditTrace"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:inline-flex items-center space-x-1.5 text-xs text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 px-2.5 py-1.5 rounded-lg transition-colors border border-slate-200"
+            title="View Source on GitHub"
+          >
+            <Github className="w-3.5 h-3.5 text-slate-700" />
+            <span className="font-semibold">GitHub</span>
+          </a>
 
           {currentUser ? (
             <div className="flex items-center space-x-3 border-l border-slate-200 pl-3 sm:pl-4">

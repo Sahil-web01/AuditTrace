@@ -1,0 +1,25 @@
+{
+  "name": "audittrace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-Powered Financial Auditing Platform for MSMEs",
+  "scripts": {
+    "install:server": "npm --prefix server install",
+    "install:client": "npm --prefix client install",
+    "install:all": "npm run install:server && npm run install:client",
+    "seed": "npm --prefix server run seed",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev"
+  },
+  "keywords": [
+    "audit",
+    "msme",
+    "fraud-detection",
+    "ai",
+    "gemini",
+    "mern",
+    "fastapi"
+  ],
+  "author": "Sahil-web01",
+  "license": "MIT"
+}

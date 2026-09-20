@@ -1,4 +1,14 @@
 # AuditTrace 🔍⚡
+### AI-Powered Financial Auditing Platform for MSMEs
+
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://python.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/cloud/atlas)
+[![Google Gemini](https://img.shields.io/badge/Google_Gemini-1.5_Flash-8E75B2?logo=google&logoColor=white)](https://ai.google.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **AuditTrace** is an AI-powered financial auditing platform designed specifically for Micro, Small, and Medium Enterprises (MSMEs). It automatically detects billing errors, duplicate invoices, and vendor fraud by replacing tedious manual ledger checks with state-of-the-art multimodal AI and anomaly detection algorithms.
 
@@ -79,6 +89,7 @@ graph TD
 AuditTrace/
 ├── README.md                   # Complete project documentation & pitch guide
 ├── LICENSE                     # MIT Open-Source License
+├── package.json                # Unified workspace helper scripts
 ├── .gitignore                  # Production gitignore rules
 │
 ├── sample_invoices/            # Ready-to-use test assets for live demo
@@ -165,6 +176,15 @@ Follow the instructions below to configure and run all three tiers locally.
 - **Python**: `3.10` or `3.11`
 - **MongoDB**: Local MongoDB instance or free [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) URI
 - **Google Gemini API Key**: From [Google AI Studio](https://aistudio.google.com/)
+
+---
+
+### 📥 Step 0: Clone the Repository
+
+```bash
+git clone https://github.com/Sahil-web01/AuditTrace.git
+cd AuditTrace
+```
 
 ---
 
@@ -309,8 +329,22 @@ Follow the instructions below to configure and run all three tiers locally.
 - [x] **Automated Data Ingestion**: Drag-and-drop support for PDF and image invoices.
 - [x] **Multimodal AI Invoice Parser**: Zero-shot entity extraction extracting Vendor Name, Tax IDs, Line Items, Subtotal, Taxes, Discounts, and Due Dates.
 - [x] **Duplicate Invoice Flagging**: Real-time matching against historical invoice numbers and vendor amount patterns.
-- [x] **Anomaly Detection with Machine Learning**: Scikit-Learn Isolation Forest scoring transaction amounts and pricing variations against historical vendor distributions.
+- [x] **Anomaly Detection with Machine Learning**: Statistical Z-Score outlier detection & price surge analysis against vendor distributions.
 - [x] **Audit Trail & Logging**: Immutable logs recording every audit score, confidence level, and discrepancy reason.
+- [x] **Role-Based Authentication**: JWT login with pre-configured 1-click demo profiles (Lead Auditor & Business Owner).
+- [x] **Audit Compliance Reporting**: One-click CSV export formatted for standard accounting compliance reviews.
+- [x] **Defensive UI Shielding**: Toast notifications and graceful fallbacks preventing any crashes during live evaluation.
+
+---
+
+## 🏆 Hackathon Evaluation Alignment
+
+| Evaluation Criteria | How AuditTrace Delivers |
+| :--- | :--- |
+| **Innovation & AI Integration** | Zero-configuration multimodal document parsing via **Google Gemini 1.5 Flash** combined with a statistical anomaly engine that dynamically computes vendor pricing baselines (Z-score > 2.0). |
+| **Technical Architecture** | Decoupled **MERN + Python (FastAPI)** architecture separating heavy AI/statistical workloads from high-throughput web request orchestration. |
+| **Business Value for MSMEs** | Directly targets the estimated **5% annual revenue loss** suffered by MSMEs due to manual auditing blind spots, duplicate payouts, and vendor price surges. |
+| **Judge Experience & Polish** | Pre-configured **1-click evaluation logins**, **1-click demo database reset**, ready-to-test benchmark invoices, and real-time MongoDB status updates. |
 
 ---
 
